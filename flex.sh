@@ -29,7 +29,7 @@ install_flex() {
     # Generate the platform specific file name to download.
     os=$(uname | tr '[:upper:]' '[:lower:]')
     file_name="flex_${os}_amd64.tar.gz"
-    base_url='https://github.com/fp-mt-test-org/flex/releases'
+    base_url='https://github.com/fp-mt/flex/releases'
     if [[ "${version_to_install}" == "latest" ]]; then
         url="${base_url}/latest/download/${file_name}"
     else
@@ -62,7 +62,7 @@ install_flex() {
     echo "Configuring the local host..."
     "${user_scripts_install_path}/configure-localhost.sh"
 
-    if [ "${auto_clean:=1}" == "1" ]; then
+    if [ "${auto_clean:=0}" == "1" ]; then
         echo "Cleaning up ${download_file_path}"
         rm -fdr "${download_file_path}"
     fi
