@@ -87,6 +87,11 @@ get_configured_version() {
 
 echo "Checking if Flex needs to be installed, updated or initialized..."
 
+if ! [[ -d "${flex_install_path}" ]]; then
+    echo "${flex_install_path} not found locally, Flex needs to be installed."
+    should_install_flex="1"
+fi
+
 if [[ -f "${service_config_path}" ]]; then
     echo "${service_config_path} exists!"
     echo "Flex has been previously initialized for this repo, reading flex version..."
@@ -94,14 +99,9 @@ if [[ -f "${service_config_path}" ]]; then
     echo "Configured version is ${version_to_install}"
 else
     if [[ "$1" != "init" ]]; then
-        echo "${service_config_path} doesn't exist, Flex needs to be initialized."
+        echo "${service_config_path} doesn't exist, to initialize please run: flex init"
         exit 1
     fi
-fi
-
-if ! [[ -d "${flex_install_path}" ]]; then
-    echo "${flex_install_path} not found locally, Flex needs to be installed."
-    should_install_flex="1"
 fi
 
 if [[ "${should_install_flex:=0}" == "1" ]]; then
