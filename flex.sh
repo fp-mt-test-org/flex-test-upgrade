@@ -8,13 +8,15 @@ echo ""
 echo "CURRENT DIR:"
 pwd
 echo ""
+echo "PARAMS:"
+echo "$@"
+echo ""
 
 auto_update="${auto_update:-0}"
 flex_install_path='./.flex'
 flex_binary_path="${flex_install_path}/flex"
 flex_version_command="${flex_binary_path} -version"
 service_config_path='./service_config.yml'
-should_install_flex="0"
 
 install_flex() {
     version_to_install="${1:-latest}"
@@ -62,7 +64,7 @@ install_flex() {
     echo "Configuring the local host..."
     "${user_scripts_install_path}/configure-localhost.sh"
 
-    if [ "${auto_clean:=0}" == "1" ]; then
+    if [ "${auto_clean:=1}" == "1" ]; then
         echo "Cleaning up ${download_file_path}"
         rm -fdr "${download_file_path}"
     fi
@@ -71,16 +73,46 @@ install_flex() {
     echo ""
 }
 
+get_configured_version() {
+    service_config_content=$(cat ${service_config_path})
+
+    if [[ "${service_config_content}" =~ [0-9]+.[0-9]+.[0-9]+ ]]; then
+        flex_version="${BASH_REMATCH[0]}"
+        echo "${flex_version}"
+    else
+        echo "ERROR: Version not found!"
+        exit 1
+    fi
+}
+
+echo "Checking if Flex needs to be installed, updated or initialized..."
+
+if [[ -f "${service_config_path}" ]]; then
+    echo "${service_config_path} exists!"
+    echo "Flex has been previously initialized for this repo, reading flex version..."
+    version_to_install=$(get_configured_version)
+    echo "Configured version is ${version_to_install}"
+else
+    if [[ "$1" != "init" ]]; then
+        echo "${service_config_path} doesn't exist, Flex needs to be initialized."
+        exit 1
+    fi
+fi
+
 if ! [[ -d "${flex_install_path}" ]]; then
-    echo "${flex_install_path} not found, will install flex!"
+    echo "${flex_install_path} not found locally, Flex needs to be installed."
     should_install_flex="1"
 fi
 
-if [[ "${should_install_flex}" == "1" ]]; then
-    install_flex
+if [[ "${should_install_flex:=0}" == "1" ]]; then
+    install_flex "${version_to_install:=latest}"
 fi
 
+echo "Getting current flex version with: ${flex_version_command}"
+
 initial_flex_version=$(${flex_version_command})
+
+echo "initial_flex_version: ${initial_flex_version}"
 
 # Check the service_config, if it exists (i.e. is not first run of flex)
 if [[ "${auto_update}" == "1" ]] && [[ -f "${service_config_path}" ]]; then
@@ -102,9 +134,5 @@ if [[ "${auto_update}" == "1" ]] && [[ -f "${service_config_path}" ]]; then
         fi
     fi
 fi
-
-echo "PARAMS:"
-echo "$@"
-echo ""
 
 "${flex_binary_path}" "$@"
