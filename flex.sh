@@ -4,13 +4,13 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-echo ""
-echo "CURRENT DIR:"
-pwd
-echo ""
-echo "PARAMS:"
-echo "$@"
-echo ""
+# echo ""
+# echo "CURRENT DIR:"
+# pwd
+# echo ""
+# echo "PARAMS:"
+# echo "$@"
+# echo ""
 
 auto_update="${auto_update:-0}"
 flex_install_path='./.flex'
@@ -85,18 +85,18 @@ get_configured_version() {
     fi
 }
 
-echo "Checking if Flex needs to be installed, updated or initialized..."
+#echo "Checking if Flex needs to be installed, updated or initialized..."
 
 if ! [[ -d "${flex_install_path}" ]]; then
-    echo "${flex_install_path} not found locally, Flex needs to be installed."
+    #echo "${flex_install_path} not found locally, Flex needs to be installed."
     should_install_flex="1"
 fi
 
 if [[ -f "${service_config_path}" ]]; then
-    echo "${service_config_path} exists!"
-    echo "Flex has been previously initialized for this repo, reading flex version..."
+    #echo "${service_config_path} exists!"
+    #echo "Flex has been previously initialized for this repo, reading flex version..."
     version_to_install=$(get_configured_version)
-    echo "Configured version is ${version_to_install}"
+    #echo "Configured version is ${version_to_install}"
 else
     if [[ "$1" != "init" ]]; then
         echo "${service_config_path} doesn't exist, to initialize please run: flex init"
@@ -108,11 +108,11 @@ if [[ "${should_install_flex:=0}" == "1" ]]; then
     install_flex "${version_to_install:=latest}"
 fi
 
-echo "Getting current flex version with: ${flex_version_command}"
+#echo "Getting current flex version with: ${flex_version_command}"
 
 initial_flex_version=$(${flex_version_command})
 
-echo "initial_flex_version: ${initial_flex_version}"
+#echo "initial_flex_version: ${initial_flex_version}"
 
 # Check the service_config, if it exists (i.e. is not first run of flex)
 if [[ "${auto_update}" == "1" ]] && [[ -f "${service_config_path}" ]]; then
@@ -120,7 +120,7 @@ if [[ "${auto_update}" == "1" ]] && [[ -f "${service_config_path}" ]]; then
 
     if [[ "${service_config}" =~ [0-9]+.[0-9]+.[0-9]+ ]]; then
         configured_flex_version="${BASH_REMATCH[0]}"
-        echo "service_config: flex: version: ${configured_flex_version}"
+        #echo "service_config: flex: version: ${configured_flex_version}"
 
         # Regex for matching snapshot versions such as v0.8.3-SNAPSHOT-27afad4
         configured_flex_version_regex=".*${configured_flex_version}.*"
