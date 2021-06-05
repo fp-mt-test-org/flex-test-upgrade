@@ -4,13 +4,13 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-# echo ""
-# echo "CURRENT DIR:"
-# pwd
-# echo ""
-# echo "PARAMS:"
-# echo "$@"
-# echo ""
+echo ""
+echo "CURRENT DIR:"
+pwd
+echo ""
+echo "PARAMS:"
+echo "$@"
+echo ""
 
 auto_update="${auto_update:-0}"
 flex_install_path='./.flex'
