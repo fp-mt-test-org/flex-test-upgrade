@@ -121,10 +121,6 @@ else
 fi
 
 if [[ "${should_install_flex:=0}" == "1" ]]; then
-    value="${version_to_install:=latest}"
-    echo "-----"
-    echo "VALUE: ${value}"
-    echo "-----"
     install_flex "${version_to_install:=latest}"
 fi
 
