@@ -22,19 +22,11 @@ if [[ -f "${latest_script_path}" ]]; then
 
     if [[ "${running_script_contents}" != "${latest_script_contents}" ]]; then
         echo "There's a new version of this script, switching!"
-        cp -v "${latest_script_path}" .
+        install -cv "${latest_script_path}" .
         ${running_script_path} "$@"
         exit 0
     fi
 fi
-
-# echo ""
-# echo "CURRENT DIR:"
-# pwd
-# echo ""
-# echo "PARAMS:"
-# echo "$@"
-# echo ""
 
 install_flex() {
     version_to_install="${1:-latest}"
@@ -47,7 +39,7 @@ install_flex() {
     # Generate the platform specific file name to download.
     os=$(uname | tr '[:upper:]' '[:lower:]')
     file_name="flex_${os}_amd64.tar.gz"
-    base_url='https://github.com/fp-mt/flex/releases'
+    base_url='https://github.com/fp-mt-test-org/flex/releases'
     if [[ "${version_to_install}" == "latest" ]]; then
         url="${base_url}/latest/download/${file_name}"
     else
@@ -66,9 +58,6 @@ install_flex() {
 
     echo "Extracting ${download_file_path} to ${install_path}"
     tar -xvf "${download_file_path}" -C "${install_path}"
-
-    # echo "Copying flex wrapper to repo root..."
-    # cp "${user_scripts_install_path}/flex.sh" .
 
     git_ignore_file='.gitignore'
 
@@ -142,11 +131,11 @@ if [[ "${auto_update}" == "1" ]] && [[ -f "${service_config_path}" ]]; then
         configured_flex_version_regex=".*${configured_flex_version}.*"
 
         if ! [[ "${initial_flex_version}" =~ ${configured_flex_version_regex} ]]; then
-            echo "Current version is different than configured, upgrading..."
+            echo "Current version is different than configured, updating..."
             install_flex "${configured_flex_version}"
             echo "Current version is now:"
             ${flex_version_command}
-            echo "Upgrade complete."
+            echo "Update complete."
         fi
     fi
 fi
