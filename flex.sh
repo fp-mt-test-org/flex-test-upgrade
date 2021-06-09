@@ -33,7 +33,6 @@ install_flex() {
     skip_download=${skip_download:=0}
     download_folder_path="${download_folder_path:=$(realpath dist)}"
 
-
     echo "Installing flex version $version_to_install!"
 
     # Generate the platform specific file name to download.
@@ -103,9 +102,14 @@ if [[ -f "${service_config_path}" ]]; then
     version_to_install=$(get_configured_version)
     #echo "Configured version is ${version_to_install}"
 else
-    if [[ "${1=}" != "init" ]]; then
-        echo "${service_config_path} doesn't exist, to initialize please run: flex init"
-        exit 1
+    if ! [[ -f "./${flex_script}" ]]; then
+        echo "${flex_script} not found in current dir ($(pwd))."
+
+        if [[ "${1:-}" == "" ]]; then
+            echo "No parameters specified to this script, saving script locally to install it..."
+            cp "${BASH_SOURCE[0]}" .
+            exit 0
+        fi
     fi
 fi
 
@@ -140,4 +144,4 @@ if [[ "${auto_update}" == "1" ]] && [[ -f "${service_config_path}" ]]; then
     fi
 fi
 
-"${flex_binary_path}" "$@"
+"${flex_binary_path}" "${@:--version}"
